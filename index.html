@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tollo - Minecraft Clone</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #87CEEB;
+            overflow: hidden;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #canvas {
+            display: block;
+            cursor: none;
+        }
+
+        #ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+        }
+
+        #crosshair::before,
+        #crosshair::after {
+            content: '';
+            position: absolute;
+            background: white;
+            box-shadow: 0 0 2px rgba(0,0,0,0.8);
+        }
+
+        #crosshair::before {
+            top: 50%;
+            left: 2px;
+            right: 2px;
+            height: 2px;
+            transform: translateY(-50%);
+        }
+
+        #crosshair::after {
+            left: 50%;
+            top: 2px;
+            bottom: 2px;
+            width: 2px;
+            transform: translateX(-50%);
+        }
+
+        #inventory {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 5px;
+            pointer-events: auto;
+        }
+
+        .inventory-slot {
+            width: 50px;
+            height: 50px;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid rgba(255,255,255,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .inventory-slot.active {
+            border-color: white;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .inventory-slot:hover {
+            border-color: yellow;
+        }
+
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            font-size: 14px;
+            line-height: 1.4;
+            pointer-events: none;
+        }
+
+        #instructions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            font-size: 12px;
+            text-align: right;
+            pointer-events: none;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="canvas"></canvas>
+        <div id="ui">
+            <div id="crosshair"></div>
+            <div id="inventory">
+                <div class="inventory-slot active" data-block="grass">GRASS</div>
+                <div class="inventory-slot" data-block="dirt">DIRT</div>
+                <div class="inventory-slot" data-block="stone">STONE</div>
+                <div class="inventory-slot" data-block="wood">WOOD</div>
+                <div class="inventory-slot" data-block="leaves">LEAVES</div>
+            </div>
+            <div id="info">
+                <div>FPS: <span id="fps">0</span></div>
+                <div>Position: <span id="position">0, 0, 0</span></div>
+                <div>Chunks: <span id="chunks">0</span></div>
+            </div>
+            <div id="instructions">
+                WASD - Move<br>
+                Mouse - Look around<br>
+                Left Click - Break block<br>
+                Right Click - Place block<br>
+                Space - Jump<br>
+                Shift - Sneak<br>
+                1-5 - Select block type<br>
+                Click to start!
+            </div>
+        </div>
+        <div id="loading">Loading Tollo...</div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>

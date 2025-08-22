@@ -1,0 +1,22 @@
+{
+  "name": "tollo-minecraft-clone",
+  "version": "1.0.0",
+  "description": "A Minecraft clone built with Three.js",
+  "main": "src/main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "vite preview --port 3000"
+  },
+  "keywords": ["minecraft", "clone", "three.js", "voxel", "game"],
+  "author": "Tollo Developer",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "three": "^0.158.0"
+  }
+}
