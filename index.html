@@ -137,6 +137,124 @@
             font-size: 24px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
+        
+        /* Pause Menu Styles */
+        .menu-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .menu-content {
+            background: rgba(40, 40, 40, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            min-width: 400px;
+            color: white;
+        }
+        
+        .menu-content h1 {
+            margin: 0 0 30px 0;
+            font-size: 32px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .menu-button {
+            background: rgba(80, 80, 80, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-family: inherit;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .menu-button:hover {
+            background: rgba(120, 120, 120, 0.8);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .menu-button:active {
+            transform: translateY(0);
+        }
+        
+        .menu-info {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
+        }
+        
+        .menu-info p {
+            margin: 5px 0;
+        }
+        
+        /* Settings Panel Styles */
+        .settings-panel {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .setting-group {
+            margin-bottom: 20px;
+        }
+        
+        .setting-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: white;
+        }
+        
+        .setting-slider {
+            width: 100%;
+            height: 6px;
+            background: rgba(80, 80, 80, 0.8);
+            border-radius: 3px;
+            outline: none;
+            appearance: none;
+        }
+        
+        .setting-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .setting-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .setting-checkbox {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
     </style>
 </head>
 <body>
@@ -149,12 +267,13 @@
                 <div class="inventory-slot" data-block="dirt">DIRT</div>
                 <div class="inventory-slot" data-block="stone">STONE</div>
                 <div class="inventory-slot" data-block="wood">WOOD</div>
-                <div class="inventory-slot" data-block="leaves">LEAVES</div>
+                <div class="inventory-slot" data-block="sand">SAND</div>
             </div>
             <div id="info">
                 <div>FPS: <span id="fps">0</span></div>
                 <div>Position: <span id="position">0, 0, 0</span></div>
                 <div>Chunks: <span id="chunks">0</span></div>
+                <div>Time: <span id="timeOfDay">Dawn</span></div>
             </div>
             <div id="instructions">
                 WASD - Move<br>
@@ -168,6 +287,64 @@
             </div>
         </div>
         <div id="loading">Loading Tollo...</div>
+        
+        <!-- Pause Menu -->
+        <div id="pauseMenu" style="display: none;">
+            <div class="menu-overlay">
+                <div class="menu-content">
+                    <h1>Tollo - Minecraft Clone</h1>
+                    <div class="menu-buttons">
+                        <button id="resumeButton" class="menu-button">Resume Game</button>
+                        <button id="settingsButton" class="menu-button">Settings</button>
+                        <button id="respawnButton" class="menu-button">Respawn</button>
+                        <button id="restartButton" class="menu-button">New World</button>
+                    </div>
+                    <div class="menu-info">
+                        <p>Press ESC to toggle this menu</p>
+                        <p>Version 1.0.0 - Built with Three.js</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Settings Menu -->
+        <div id="settingsMenu" style="display: none;">
+            <div class="menu-overlay">
+                <div class="menu-content">
+                    <h1>Settings</h1>
+                    <div class="settings-panel">
+                        <div class="setting-group">
+                            <label for="renderDistance">Render Distance: <span id="renderDistanceValue">8</span> chunks</label>
+                            <input type="range" id="renderDistance" min="4" max="16" value="8" class="setting-slider">
+                        </div>
+                        <div class="setting-group">
+                            <label for="mouseSensitivity">Mouse Sensitivity: <span id="mouseSensitivityValue">100</span>%</label>
+                            <input type="range" id="mouseSensitivity" min="25" max="200" value="100" class="setting-slider">
+                        </div>
+                        <div class="setting-group">
+                            <label for="dayLength">Day Length: <span id="dayLengthValue">2</span> minutes</label>
+                            <input type="range" id="dayLength" min="1" max="10" value="2" class="setting-slider">
+                        </div>
+                        <div class="setting-group">
+                            <label>
+                                <input type="checkbox" id="enableShadows" checked class="setting-checkbox">
+                                Enable Shadows
+                            </label>
+                        </div>
+                        <div class="setting-group">
+                            <label>
+                                <input type="checkbox" id="enableParticles" checked class="setting-checkbox">
+                                Enable Particles
+                            </label>
+                        </div>
+                    </div>
+                    <div class="menu-buttons">
+                        <button id="applySettingsButton" class="menu-button">Apply Settings</button>
+                        <button id="backToMenuButton" class="menu-button">Back to Menu</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script type="module" src="/src/main.js"></script>
 </body>

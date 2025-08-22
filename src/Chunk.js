@@ -41,7 +41,7 @@ export class Chunk {
         return this.blocks[x][y][z];
     }
     
-    buildMesh() {
+    buildMesh(world = null) {
         // Dispose of existing mesh
         if (this.mesh) {
             if (this.mesh.geometry) this.mesh.geometry.dispose();
@@ -74,7 +74,7 @@ export class Chunk {
                     
                     this.addBlockFaces(
                         worldX, y, worldZ, block,
-                        positions, normals, colors, indices, vertexCount
+                        positions, normals, colors, indices, vertexCount, world
                     );
                     
                     vertexCount = positions.length / 3;
@@ -108,7 +108,7 @@ export class Chunk {
         this.needsUpdate = false;
     }
     
-    addBlockFaces(worldX, worldY, worldZ, block, positions, normals, colors, indices, startVertex) {
+    addBlockFaces(worldX, worldY, worldZ, block, positions, normals, colors, indices, startVertex, world = null) {
         const x = worldX;
         const y = worldY;
         const z = worldZ;
@@ -121,7 +121,8 @@ export class Chunk {
                 vertices: [
                     [1, 0, 0], [1, 1, 0], [1, 1, 1], [1, 0, 1]
                 ],
-                check: [x + 1, y, z]
+                check: [x + 1, y, z],
+                face: 'side'
             },
             // Left face (-X)
             {
@@ -129,7 +130,8 @@ export class Chunk {
                 vertices: [
                     [0, 0, 1], [0, 1, 1], [0, 1, 0], [0, 0, 0]
                 ],
-                check: [x - 1, y, z]
+                check: [x - 1, y, z],
+                face: 'side'
             },
             // Top face (+Y)
             {
@@ -155,7 +157,8 @@ export class Chunk {
                 vertices: [
                     [0, 0, 1], [0, 1, 1], [1, 1, 1], [1, 0, 1]
                 ],
-                check: [x, y, z + 1]
+                check: [x, y, z + 1],
+                face: 'side'
             },
             // Back face (-Z)
             {
@@ -163,13 +166,14 @@ export class Chunk {
                 vertices: [
                     [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 0]
                 ],
-                check: [x, y, z - 1]
+                check: [x, y, z - 1],
+                face: 'side'
             }
         ];
         
         faces.forEach(faceData => {
             // Check if this face should be rendered (not adjacent to solid block)
-            if (!this.shouldRenderFace(faceData.check[0], faceData.check[1], faceData.check[2])) {
+            if (!this.shouldRenderFace(faceData.check[0], faceData.check[1], faceData.check[2], world)) {
                 return;
             }
             
@@ -192,25 +196,30 @@ export class Chunk {
         });
     }
     
-    shouldRenderFace(x, y, z) {
+    shouldRenderFace(x, y, z, world = null) {
         // Check if there's a solid block at the given world coordinates
         // If there is, don't render this face (it's hidden)
         
-        // For now, render all faces (simple implementation)
-        // In a full implementation, you'd check adjacent chunks too
         if (y < 0 || y >= this.height) return true;
         
         // Convert world coordinates to local coordinates
         const localX = x - (this.x * this.size);
         const localZ = z - (this.z * this.size);
         
-        // If coordinates are outside this chunk, assume air (render face)
-        if (localX < 0 || localX >= this.size || localZ < 0 || localZ >= this.size) {
-            return true;
+        // If coordinates are within this chunk, check directly
+        if (localX >= 0 && localX < this.size && localZ >= 0 && localZ < this.size) {
+            const adjacentBlock = this.blocks[localX][y][localZ];
+            return !adjacentBlock || adjacentBlock.type === BlockType.AIR;
         }
         
-        const adjacentBlock = this.blocks[localX][y][localZ];
-        return !adjacentBlock || adjacentBlock.type === BlockType.AIR;
+        // If coordinates are outside this chunk, check with world if available
+        if (world) {
+            const adjacentBlock = world.getBlock(x, y, z);
+            return !adjacentBlock || adjacentBlock.type === BlockType.AIR;
+        }
+        
+        // If no world reference, assume air (render face)
+        return true;
     }
     
     dispose() {

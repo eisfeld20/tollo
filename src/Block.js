@@ -62,7 +62,7 @@ export const BlockData = {
         name: 'Sand',
         solid: true,
         transparent: false,
-        color: 0xFFC107
+        color: 0xF4E99B
     }
 };
 

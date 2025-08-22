@@ -100,9 +100,7 @@ export class InputHandler {
                 this.keys.shift = true;
                 break;
             case 'escape':
-                if (this.isPointerLocked) {
-                    document.exitPointerLock();
-                }
+                this.game.togglePause();
                 break;
         }
         
@@ -230,7 +228,7 @@ export class InputHandler {
     
     selectBlock(slotNumber) {
         // Map slot numbers to block types
-        const blockTypes = [null, 1, 2, 3, 4, 5]; // [null, grass, dirt, stone, wood, leaves]
+        const blockTypes = [null, 1, 2, 3, 4, 7]; // [null, grass, dirt, stone, wood, sand]
         
         if (slotNumber >= 1 && slotNumber <= 5) {
             this.selectedBlockType = blockTypes[slotNumber];
